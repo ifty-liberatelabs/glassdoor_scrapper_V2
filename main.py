@@ -10,8 +10,7 @@ logging.basicConfig(
 
 app = FastAPI(
     title="Glassdoor Scraper Suite",
-    version="0.3.0",
-    description="ID → CSRF → pages → reviews",
+    version="0.3.0"
 )
 
 app.include_router(orchestrator_api.router, prefix="/glassdoor", tags=["Orchestrator"])
@@ -21,7 +20,7 @@ if __name__ == "__main__":
     uvicorn.run(
         "main:app",
         host="0.0.0.0",
-        port=8001,
+        port=8000,
         reload=True,
         log_config=None,
         log_level="info"

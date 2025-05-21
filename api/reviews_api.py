@@ -53,8 +53,7 @@ async def get_reviews(request: Request):
     
     saved_files = []
     
-    for page in range(1, number_of_pages + 1) :  # Loop from 1 to number_of_pages
-        # Prepare payload
+    for page in range(1, number_of_pages + 1) :
         payload = json.dumps([
             {
                 "operationName": "RecordPageView",
@@ -80,7 +79,7 @@ async def get_reviews(request: Request):
                     },
                     "onlyCurrentEmployees": False,
                     "overallRating": None,
-                    "page": int(page),  # Replacing the page dynamically
+                    "page": int(page),
                     "preferredTldId": 0,
                     "reviewCategories": [],
                     "sort": "RELEVANCE",

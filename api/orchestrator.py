@@ -3,7 +3,7 @@
 from typing import Optional
 from fastapi import APIRouter, HTTPException, Query
 from api.id_api import _extract_employer_id
-from auth.csrf_api import extract_tokens
+from utils.playwright_util import extract_tokens
 import api.pages_api as pages_api
 import api.reviews_api as reviews_api
 
