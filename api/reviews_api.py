@@ -10,7 +10,7 @@ logger = logging.getLogger(__name__)
 
 @router.get("/reviews", summary="Extract all reviews for an employer and save to JSON files")
 async def get_reviews(request: Request):
-
+    logger.info("Starting /reviews scrape")
     if not hasattr(request.app.state, "employer_id"):
         raise HTTPException(
             status_code=400, 
@@ -132,8 +132,12 @@ async def get_reviews(request: Request):
                 json.dump(response.json(), file, indent=4)
             
             saved_files.append(file_path)
-            logger.info(f"Page {page}/{number_of_pages} saved to {file_path}. Sleeping for 2 seconds…")
-            await asyncio.sleep(2)
+            #logger.info(f"Page {page}/{number_of_pages} saved to {file_path}. Sleeping for 2 seconds…")
+            #await asyncio.sleep(2)
+            logger.info(f"Page {page}/{number_of_pages} saved to {file_path}.")
+            if page % 10 == 0:
+                logger.info(f"Completed batch ending on page {page}. Sleeping for 0.5 seconds…")
+                await asyncio.sleep(0.5)
             
         except requests.exceptions.RequestException as e:
             raise HTTPException(status_code=500, detail=f"API request failed for page {page}: {str(e)}")
@@ -142,6 +146,7 @@ async def get_reviews(request: Request):
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error saving page {page}: {str(e)}")
     
+    logger.info("Completed all pages")
     # Return summary of the operation
     return {
         "employer_id": employer_id,

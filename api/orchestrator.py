@@ -1,4 +1,7 @@
-from fastapi import APIRouter, HTTPException
+# api/orchestrator.py
+
+from typing import Optional
+from fastapi import APIRouter, HTTPException, Query
 from api.id_api import _extract_employer_id
 from auth.csrf_api import extract_tokens
 import api.pages_api as pages_api
@@ -18,27 +21,33 @@ class DummyRequest:
     "/scrape",
     summary="All-in-one Glassdoor scrape: id → auth → pages → reviews",
 )
-async def scrape(url: str):
+async def scrape(
+    url: str = Query(..., description="Glassdoor company overview URL"),
+    pages: Optional[int] = Query(
+        None,
+        ge=1,
+        description="Optional max number of pages to scrape; if omitted, scrapes all pages",
+    ),
+):
     # 1) Extract employer ID
     try:
         employer_id = _extract_employer_id(url)
     except Exception as e:
         raise HTTPException(status_code=400, detail=f"Invalid URL: {e}")
 
-    # 2) Log in & grab tokens
+    # 2) Authenticate
     try:
         auth = await extract_tokens()
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Auth failed: {e}")
 
-    # Prepare a dummy app state that mimics what your other endpoints expect
+    # 3) Prepare dummy state and call /pages to get total_pages
     dummy_app = DummyApp()
     dummy_app.state.employer_id   = employer_id
     dummy_app.state.gd_csrf_token = auth["gd_csrf_token"]
     dummy_app.state.cookie        = auth["cookie"]
     dummy_req = DummyRequest(dummy_app)
 
-    # 3) Get total pages
     try:
         pages_resp = await pages_api.get_total_pages(dummy_req)
         total_pages = pages_resp["total_pages"]
@@ -47,10 +56,16 @@ async def scrape(url: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Pages failed: {e}")
 
-    # stash it for the final step
-    dummy_app.state.total_pages = total_pages
+    # 4) Apply optional limit
+    if pages is not None:
+        to_scrape = min(pages, total_pages)
+    else:
+        to_scrape = total_pages
 
-    # 4) Scrape all reviews
+    # stash it for the reviews step
+    dummy_app.state.total_pages = to_scrape
+
+    # 5) Call /reviews
     try:
         reviews_resp = await reviews_api.get_reviews(dummy_req)
     except HTTPException as he:
@@ -58,11 +73,12 @@ async def scrape(url: str):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Reviews failed: {e}")
 
-    # Return a combined result
+    # 6) Return combined result
     return {
-        "employer_id":   employer_id,
-        "gd_csrf_token": auth["gd_csrf_token"],
-        "cookie":        auth["cookie"],
-        "total_pages":   total_pages,
-        "reviews":       reviews_resp,
+        "employer_id":          employer_id,
+        "gd_csrf_token":        auth["gd_csrf_token"],
+        "cookie":               auth["cookie"],
+        "requested_pages":      pages if pages is not None else total_pages,
+        "actual_pages_scraped": to_scrape,
+        **reviews_resp,
     }

@@ -1,28 +1,23 @@
 import json
 import requests
+import logging
 from fastapi import APIRouter, HTTPException, Request
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 @router.get("/pages", summary="Get total number of review pages for an employer")
 async def get_total_pages(request: Request):
-    """
-    Get the total number of review pages for an employer.
-    
-    This endpoint uses:
-    - employer_id from the /id endpoint
-    - gd_csrf_token and cookie from the /csrf endpoint
-    
-    Returns the total number of review pages.
-    """
-    # Check if required state variables are available
+    logger.info("Received request to /pages")
     if not hasattr(request.app.state, "employer_id"):
+        logger.warning("Employer ID missing in state")
         raise HTTPException(
             status_code=400, 
             detail="Employer ID not found. Please call /glassdoor/id endpoint first."
         )
     
     if not hasattr(request.app.state, "gd_csrf_token") or not hasattr(request.app.state, "cookie"):
+        logger.warning("Auth tokens missing in state")
         raise HTTPException(
             status_code=400, 
             detail="Authentication tokens not found. Please call /glassdoor/csrf endpoint first."
@@ -35,7 +30,9 @@ async def get_total_pages(request: Request):
     
     # API endpoint
     url = "https://www.glassdoor.com/graph"
-    
+
+    logger.info(f"Fetching total pages for employer_id={employer_id}")
+
     # Prepare payload
     payload = json.dumps([
         {
@@ -114,6 +111,7 @@ async def get_total_pages(request: Request):
         # Extract number of pages
         number_of_pages = response_data[1]['data']['employerReviews']['numberOfPages']
         
+        logger.info(f"Total pages for {employer_id}: {number_of_pages}")
         # Save in app state for downstream routes
         request.app.state.total_pages = number_of_pages
         
@@ -123,6 +121,8 @@ async def get_total_pages(request: Request):
         }
         
     except requests.exceptions.RequestException as e:
+        logger.exception("Error fetching total pages")
         raise HTTPException(status_code=500, detail=f"API request failed: {str(e)}")
     except (KeyError, IndexError, TypeError) as e:
+        logger.exception("Error fetching total pages")
         raise HTTPException(status_code=500, detail=f"Failed to parse API response: {str(e)}")
