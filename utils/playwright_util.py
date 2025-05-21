@@ -3,6 +3,9 @@ import asyncio
 from fastapi import FastAPI, HTTPException
 from playwright.async_api import async_playwright
 from dotenv import load_dotenv
+import logging
+
+logger = logging.getLogger(__name__)
 
 load_dotenv()
 
@@ -16,7 +19,7 @@ app = FastAPI(title="Glassdoor helper")
 # ─── 3.  CORE SCRAPER  ───────────────────────────────────────────────────
 async def extract_tokens() -> dict:
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=False)      # set True on server
+        browser = await p.chromium.launch(headless=False)
         context = await browser.new_context()
         page = await context.new_page()
 
@@ -50,10 +53,15 @@ async def extract_tokens() -> dict:
 
         await browser.close()
 
+
         if not gd_csrf_token:
             raise RuntimeError("Could not capture gd‑csrf‑token")
+            
+        
+        
 
         return {"gd_csrf_token": gd_csrf_token, "cookie": cookies}
+        
 
 # ─── 4.  ROUTE  ──────────────────────────────────────────────────────────
 @app.get("/glassdoor/login")

@@ -1,0 +1,23 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Run under Xvfb, and spawn one Uvicorn worker per CPU core
+    command: >
+      sh -c "xvfb-run -a --server-args='-screen 0 1024x768x24' python -m uvicorn main:app --host 0.0.0.0 --port=${PORT} --workers=$(nproc)"
+    ports:
+      - "${PORT}:${PORT}"
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    networks:
+      - my_network
+
+networks:
+  my_network:
+    driver: bridge
+
+volumes:
+  postgres_data:

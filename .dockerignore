@@ -1,0 +1,6 @@
+# Ignore macOS metadata files
+._*
+.DS_Store
+*.log
+.env
+__pycache__/

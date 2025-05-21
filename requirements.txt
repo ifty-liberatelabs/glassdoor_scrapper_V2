@@ -1,0 +1,8 @@
+fastapi>=0.100.0,<0.111.0 
+uvicorn[standard]>=0.20.0,<0.28.0 
+
+# HTTP client for API calls (used in pages_api, reviews_api)
+requests>=2.25.0,<3.0.0
+
+# Browser automation for authentication (used in auth/csrf_api)
+playwright>=1.30.0,<1.44.0
