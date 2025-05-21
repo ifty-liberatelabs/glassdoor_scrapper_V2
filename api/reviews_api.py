@@ -4,6 +4,7 @@ import os
 import asyncio 
 import logging
 from fastapi import APIRouter, HTTPException, Request
+import httpx
 
 router = APIRouter()
 logger = logging.getLogger(__name__)
@@ -122,7 +123,7 @@ async def get_reviews(request: Request):
         
         try:
             # Make the request
-            response = requests.post(url, headers=headers, data=payload)
+            response = await httpx.AsyncClient().post(url, headers=headers, data=payload)
             response.raise_for_status()  # Raise exception for HTTP errors
             
             # Save the response as a JSON file for each page in the new folder

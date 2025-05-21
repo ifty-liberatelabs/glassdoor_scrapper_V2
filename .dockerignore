@@ -1,6 +1,45 @@
-# Ignore macOS metadata files
-._*
-.DS_Store
-*.log
-.env
+# Python
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS / System
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Docker
+Dockerfile
+docker-compose.yaml
+.dockerignore
+
+# Secrets / Environment
+.env
+*.env
+
+# Local data / Output folders from scraping (add your patterns)
+# Example: if your employer_id folders are numeric
+[0-9]*_*/
+[0-9]*/
+
+
+# Test files if you have them and don't want them in the image
+tests/
+*.test.py
+pytest.ini
+.pytest_cache/

@@ -2,6 +2,7 @@ import json
 import requests
 import logging
 from fastapi import APIRouter, HTTPException, Request
+import httpx
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
@@ -102,7 +103,7 @@ async def get_total_pages(request: Request):
     
     try:
         # Make the request
-        response = requests.post(url, headers=headers, data=payload)
+        response = await httpx.AsyncClient().post(url, headers=headers, data=payload)
         response.raise_for_status()  # Raise exception for HTTP errors
         
         # Parse the response

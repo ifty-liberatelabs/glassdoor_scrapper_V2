@@ -6,3 +6,9 @@ requests>=2.25.0,<3.0.0
 
 # Browser automation for authentication (used in auth/csrf_api)
 playwright>=1.30.0,<1.44.0
+
+httpx
+
+python-dotenv
+
+aiofiles
