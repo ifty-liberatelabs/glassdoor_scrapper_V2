@@ -1,30 +1,36 @@
 import re
 import logging
-from fastapi import APIRouter, Query, HTTPException, Request     # ← added Request
+from fastapi import APIRouter, Query, HTTPException, Request
 
 logger = logging.getLogger(__name__)
 router = APIRouter()
-_ID_PATTERN = re.compile(r"E(\d+)")
+
+# Match: -EI_IE<digits>.  OR  -E<digits>.htm
+_ID_PATTERN = re.compile(r"-EI_IE(\d+)\.|-E(\d+)\.htm")
 
 def _extract_employer_id(url: str) -> int:
     logger.info(f"Parsing employer ID from URL: {url}")
-    m = _ID_PATTERN.search(url)
-    if not m:
+    match = _ID_PATTERN.search(url)
+    if not match:
         logger.error("No employer ID found in URL")
         raise ValueError("No employerId found in the supplied URL.")
-    eid = int(m.group(1))
+    
+    # Use the matched group that isn't None
+    employer_id_str = match.group(1) or match.group(2)
+    if employer_id_str is None:
+        raise ValueError("Matched pattern, but could not extract employer ID.")
+
+    eid = int(employer_id_str)
     logger.info(f"Extracted employer_id: {eid}")
     return eid
-    
 
 @router.get("/id", summary="Extract employerId from URL")
 async def employer_id(
-    request: Request,                     # ← NEW
+    request: Request,
     url: str = Query(...)
 ):
     try:
         eid = _extract_employer_id(url)
-        # ── SAVE in app.state so other routes can reuse it ───────────
         request.app.state.employer_id = eid
         return {"employer_id": eid}
     except ValueError as err:
