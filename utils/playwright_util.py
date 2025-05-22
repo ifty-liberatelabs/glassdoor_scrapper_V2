@@ -18,8 +18,8 @@ load_dotenv()
 # --- CONFIGURATION ---
 EMAIL = os.getenv("GD_EMAIL")
 PASSWORD = os.getenv("GD_PASSWORD")
-TOKEN_FILE_PATH = "auth_tokens.json"  # Or choose a path like "persistent_data/auth_tokens.json"
-TOKEN_EXPIRY_HOURS = 6 # How long a token is considered "fresh" by timestamp
+TOKEN_FILE_PATH = "auth_tokens.json" 
+TOKEN_EXPIRY_HOURS = 24
 
 if not EMAIL or not PASSWORD:
     logger.critical("GD_EMAIL and/or GD_PASSWORD not set in environment. Application will not be able to log in.")
@@ -36,7 +36,6 @@ async def _perform_playwright_login() -> Dict[str, str]:
         raise ValueError("Glassdoor credentials (GD_EMAIL, GD_PASSWORD) are not configured.")
 
     async with async_playwright() as p:
-        # Keeping headless=False as requested
         logger.info("Launching Playwright browser...")
         browser = await p.chromium.launch(headless=False)
         context = await browser.new_context()
