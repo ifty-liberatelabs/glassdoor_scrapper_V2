@@ -1,0 +1,69 @@
+# === Python ===
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.log
+
+# === Jupyter Notebooks ===
+.ipynb_checkpoints/
+
+# === Virtual Environments ===
+.env
+.venv/
+env/
+venv/
+ENV/
+Pipfile.lock
+poetry.lock
+
+# === macOS system files ===
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# === IDEs and Editors ===
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# === OS generated files ===
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# === Testing and Coverage ===
+htmlcov/
+.tox/
+.nox/
+.coverage
+coverage.xml
+*.cover
+.pytest_cache/
+nosetests.xml
+test-results.xml
+.json
+
+# === Docker ===
+*.pid
+*.seed
+*.pid.lock
+
+# === FastAPI / Uvicorn logs ===
+*.db
+*.sqlite3
+*.log
+
+# === Git backup files ===
+*.orig
+
+# === Misc ===
+*.bak
+*.tmp
+*.swp
+*.swo
