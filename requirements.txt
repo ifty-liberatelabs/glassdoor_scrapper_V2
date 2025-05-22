@@ -12,3 +12,5 @@ httpx
 python-dotenv
 
 aiofiles
+
+tenacity
