@@ -136,8 +136,8 @@ async def get_reviews(request: Request):
             #await asyncio.sleep(2)
             logger.info(f"Page {page}/{number_of_pages} saved to {file_path}.")
             if page % 10 == 0:
-                logger.info(f"Completed batch ending on page {page}. Sleeping for 0.1 seconds…")
-                await asyncio.sleep(0.1)
+                logger.info(f"Completed batch ending on page {page}. Sleeping for 0.2 seconds…")
+                await asyncio.sleep(0.2)
             
         except requests.exceptions.RequestException as e:
             raise HTTPException(status_code=500, detail=f"API request failed for page {page}: {str(e)}")
