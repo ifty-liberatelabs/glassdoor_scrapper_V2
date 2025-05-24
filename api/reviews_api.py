@@ -92,7 +92,7 @@ async def page_scraping_worker(
 ):
     logger.info(f"Worker {worker_id}: Starting...")
     pages_processed_in_this_worker_batch = 0
-    WORKER_BATCH_SIZE = 10
+    WORKER_BATCH_SIZE = 5
 
     while True:
         page_num = None # Initialize page_num to ensure task_done is called correctly in finally
@@ -155,7 +155,7 @@ async def page_scraping_worker(
 
 
 @router.get("/reviews", summary="Extract all reviews for an employer and save to JSON files (concurrent workers with global delay)")
-async def get_reviews(request: Request, num_concurrent_workers: int = 30):
+async def get_reviews(request: Request, num_concurrent_workers: int = 1000):
     logger.info(f"Starting /reviews scrape with {num_concurrent_workers} concurrent workers.")
     # ... (initial checks for employer_id, tokens, total_pages remain the same) ...
     if not hasattr(request.app.state, "employer_id"):
