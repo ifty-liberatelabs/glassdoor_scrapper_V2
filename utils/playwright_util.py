@@ -19,7 +19,7 @@ load_dotenv()
 EMAIL = os.getenv("GD_EMAIL")
 PASSWORD = os.getenv("GD_PASSWORD")
 TOKEN_FILE_PATH = "auth_tokens.json"  # Or choose a path like "persistent_data/auth_tokens.json"
-TOKEN_EXPIRY_HOURS = 6 # How long a token is considered "fresh" by timestamp
+TOKEN_EXPIRY_HOURS = 48 # How long a token is considered "fresh" by timestamp
 
 if not EMAIL or not PASSWORD:
     logger.critical("GD_EMAIL and/or GD_PASSWORD not set in environment. Application will not be able to log in.")
